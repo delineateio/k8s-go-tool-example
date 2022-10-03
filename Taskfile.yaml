@@ -1,17 +1,28 @@
 version: 3
 
-includes:
-  cloud: ./ops/taskfile.cloud.yaml
-  local: ./ops/taskfile.local.yaml
-
 tasks:
   init:
     desc: initialise local environment
     cmds:
-      - tfenv pin
       - task: pre-commit:init
 
   pre-commit:init:
     desc: initialises pre-commit hooks
     cmds:
       - pre-commit install
+
+  single:dev:
+    cmds:
+      - skaffold dev --port-forward --no-prune=false --cache-artifacts=false
+
+  single:run:
+    cmds:
+      - skaffold run --port-forward --no-prune=false --cache-artifacts=false
+
+  scaled:dev:
+    cmds:
+      - skaffold dev --port-forward --no-prune=false --cache-artifacts=false --profile=scaled
+
+  cleanup:
+    cmds:
+      - skaffold delete

@@ -10,34 +10,50 @@ ENV TFENV_VERSION 1.3.1
 ARG NODE_VERSION="lts/*"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c ". /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
-# program installs ----------------------------------------------------------------
+# base ----------------------------------------------------------------------------
 
 RUN apt update \
     && apt -y install python3-dev python3-pip nodejs npm gcc musl-dev acl
-RUN curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
 RUN bash -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b $INSTALL_DIR
-
-# #  renames ------------------------------------------------------------------------
 
 RUN ln -sf python3 /usr/bin/python
 RUN ln -sf pip3 /usr/bin/pip
 RUN ln -sf $INSTALL_DIR/task /usr/bin/task
 
-# #  pip installs -------------------------------------------------------------------
+# pip -----------------------------------------------------------------------------
 
 COPY ./requirements.txt /usr/
 RUN pip install --no-cache --upgrade pip setuptools
 RUN pip install -r /usr/requirements.txt
 
-# #  tfenv --------------------------------------------------------------------------
+# kubectl -------------------------------------------------------------------------
 
-RUN mkdir -p $INSTALL_DIR
-RUN git clone --depth=1 https://github.com/tfutils/tfenv.git $INSTALL_DIR/tfenv
-RUN setfacl -R -m u:vscode:rwx $INSTALL_DIR/tfenv
-RUN ln -s $INSTALL_DIR/tfenv/bin/* /usr/bin
-RUN tfenv install $TFENV_VERSION
-RUN tfenv use $TFENV_VERSION
+RUN curl -sSL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
+    && chmod +x /usr/local/bin/kubectl
 
-# #  init ---------------------------------------------------------------------------
+# helm ----------------------------------------------------------------------------
+
+RUN curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash -
+
+# skaffold ------------------------------------------------------------------------
+
+RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+sudo install skaffold /usr/local/bin/
+
+# ko ------------------------------------------------------------------------------
+
+RUN go install github.com/google/ko@latest
+
+# gcloud --------------------------------------------------------------------------
+
+RUN sudo apt-get install apt-transport-https ca-certificates gnupg
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg && apt-get update -y && apt-get install google-cloud-sdk -y
+
+# .minikube -----------------------------------------------------------------------
+
+COPY kube-config.sh /usr/local/share/
+RUN echo "source /usr/local/share/kube-config.sh" | tee -a /home/vscode/.bashrc >> /home/vscode/.zshrc
+
+# task init -----------------------------------------------------------------------
 
 RUN echo "task init" | tee -a /home/vscode/.bashrc >> /home/vscode/.zshrc

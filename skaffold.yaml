@@ -1,0 +1,36 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: skaffold
+build:
+  platforms: ["linux/amd64"]
+  tagPolicy:
+    customTemplate:
+      template: "{{.SHA}}"
+      components:
+      - name: SHA
+        gitCommit:
+          variant: AbbrevCommitSha
+  artifacts:
+  - image: delineateio/hello
+    ko:
+      dir: ./dev/src/s1
+      labels:
+        org.opencontainers.image.licenses: MIT
+  - image: delineateio/hola
+    ko:
+      dir: ./dev/src/s2
+      labels:
+        org.opencontainers.image.licenses: MIT
+
+deploy:
+  kustomize:
+    paths:
+    - "./ops/k8s/overlays/dev"
+
+profiles:
+- name: scaled
+  deploy:
+    kustomize:
+      paths:
+      - "./ops/k8s/overlays/prod"

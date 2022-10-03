@@ -1,4 +1,3 @@
-[![CircleCI][circleci-url]][circleci-url]
 [![PRs Welcome][pr-welcome-shield]][pr-welcome-url]
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -13,19 +12,19 @@
   <h2 align="center">delineate.io</h2>
   <p align="center">portray or describe (something) precisely.</p>
 
-  <h3 align="center">[PROJECT_TITLE]</h3>
+  <h3 align="center">k8s Go Tooling Example</h3>
 
   <p align="center">
-    [PROJECT_DESCRIPTION]
+    Demonstrates a combination of k8s related tools for efficient build, test and deployment of Go microservices.
     <br />
-    <a href="https://github.com/delineateio/oss-template"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/delineateio/k8s-go-tool-example"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/delineateio/oss-template">View Demo</a>
+    <a href="https://github.com/delineateio/k8s-go-tool-example">View Demo</a>
     ·
-    <a href="https://github.com/delineateio/oss-template/issues">Report Bug</a>
+    <a href="https://github.com/delineateio/k8s-go-tool-example/issues">Report Bug</a>
     ·
-    <a href="https://github.com/delineateio/oss-template/issues">Request Feature</a>
+    <a href="https://github.com/delineateio/k8s-go-tool-example/issues">Request Feature</a>
   </p>
 </p>
 
@@ -35,14 +34,12 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [About The Project](#about-the-project)
+- [What's been built](#whats-been-built)
 - [Built With](#built-with)
-- [Getting Started](#getting-started)
-  - [Local Dependencies](#local-dependencies)
-  - [Local Setup](#local-setup)
+- [Local Setup](#local-setup)
+  - [Dev Container](#dev-container)
+  - [Kubernetes](#kubernetes)
 - [Usage](#usage)
-- [Infrastructure](#infrastructure)
-  - [Local Services](#local-services)
-  - [Cloud Infrastructure](#cloud-infrastructure)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -53,79 +50,70 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-The repo description should be added here and describe at least:
+This repo demonstrates a combination of k8s related tools that when used in combination provide an efficient build, test and deployment pipeline for developing Go microservices.
 
-* Purpose of the repo e.g. problem/opportunity statement
-* High level description of the overall approach/solution
+* Using [ko](https://github.com/ko-build/ko) to create distroless images from [go](https://go.dev) source code
+* Using [kustomize](https://kustomize.io/) to dyanmically transform k8s manifests before deployment
+* Using [skaffold](https://github.com/GoogleContainerTools/skaffold) to manage a build, test and deploy opinionated pipeline
+
+In addition to this DevContainer has been used to package the local development environment.
+
+## What's been built
+
+Two "unique" services have been containerised that run in the background with no API, one is English and one is Spainish 🇬🇧🇪🇸, and print `hello` to the stdout.
+
+![logs](assets/logs.png "logs")
+
+In addition to these two services, they have been packaged in a pod with a [k8s echo server](https://console.cloud.google.com/gcr/images/kubernetes-e2e-test-images/global/echoserver) container.  When running, the echo server can be accessed using `http :8080` either from the host of from within the dev container.
 
 ## Built With
-
-Further logos can be inserted to highlight the specific technologies used to create the solution from [here](https://github.com/Ileriayo/markdown-badges).
 
 | Syntax | Description |
 | --- | ----------- |
 | ![pre-commit](https://img.shields.io/badge/precommit-%235835CC.svg?style=for-the-badge&logo=precommit&logoColor=white) | Pre-commit `git` hooks that perform checks before pushes|
 | ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) | Source control management platform  |
-| ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) | Containerise applications and provide local environment |
-| ![CircleCI](https://img.shields.io/badge/CIRCLECI-%23161616.svg?style=for-the-badge&logo=circleci&logoColor=white) | CI/CD pipeline and services |
-| ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white) | Cloud infrastructure provisioning configuration|
-| ![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=Cloudflare&logoColor=white) | Security and DNS services for internet services|
-| ![Google Cloud](https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white) | Hosting of services on Google Cloud |
+| ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white) | Writing of the example containerised services |
+| ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) | Used to providr the [devcontainer](https://containers.dev/implementors/json_reference/) |
+| ![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white) | Provide the hosting of the containerised applications |
 
-<!-- GETTING STARTED -->
-## Getting Started
+<!-- LOCAL SETUP -->
+## Local Setup
 
-To get a local copy up and running follow these simple steps.
+### Dev Container
 
-### Local Dependencies
+The local development environment is provided using [devcontainer](https://containers.dev/implementors/json_reference/) which is natively supported in VSCode as described [here](https://code.visualstudio.com/docs/remote/containers).  This has been used to show how this approach signficantly reduces local requirements.
 
-A number of local dependencies are required.  To review the local dependencies run `task dependencies:list`.  If new local dependencies then they should be added to the correct Taskfile in `./os` e.g. `taskfile.darwin.yaml`.
+### Kubernetes
 
-> Note that currently only `macOS` is configured and a PR should be submitted if either `Linux` or `Windows` are required.
+This examples repo relies on having access to a running local or remote k8s cluster, correctly setup and accessible with [kubectl](https://kubernetes.io/docs/tasks/tools/) using `kubectl cluster-info`.
 
-### Local Setup
+As part of t`he development container provisioning the [kube-config](.devcontainer/.kube-config.sh) script replicates the hosts `$HOME/.kube/config` within the container.
 
-This repo follows the principle of minimal manual setup of the local development environment.
-
- A `task` target has been provided for simplicity ```task init```, the `taskfile.yaml` file can be inspected for more details.
+This particular implementation has only been tested using [minikube](https://minikube.sigs.k8s.io/docs/) configured to use the [VMWare driver](https://minikube.sigs.k8s.io/docs/drivers/vmware/).
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)._
-
-## Infrastructure
-
-### Local Services
-
-A boilerplate `docker-compose` file is provided that can be used to manage local environment services.  The stack can be found at `ops/local/stack.yaml`.
+Inside the container using the VSCode integrated terminal the following commands can be used...
 
 ```shell
-# stands up the local services
-task local:up
+# builds, deploys (1 pod) and watches for changes
+task single:dev
 
-# tears down the local services
-task local:down
-```
+#  alternatively, this builds and deploys once
+task single:run
 
-### Cloud Infrastructure
+# cleans up the cluster
+task cleanup
 
-A boilerplate configuration is provided for using `terraform` configuration to provision cloud infrastructure.  [tfenv](https://github.com/tfutils/tfenv) is used to select the version of `terraform` to use.  The repo template provides a single component in `ops/cloud/component`.
-
-```shell
-# plans the network terraform config
-task cloud:plan LAYER=component
-
-# auto approves applying the network terraform config
-task cloud:apply LAYER=component
+# builds, deploys a scaled example (3 pods)
+task scaled:dev
 ```
 
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/delineateio/oss-template/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/delineateio/k8s-go-tool-example/issues) for a list of proposed features (and known issues).
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -158,16 +146,15 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[circleci-url]: https://img.shields.io/circleci/build/gh/delineateio/oss-template?style=for-the-badge&logo=circleci
 [pr-welcome-shield]: https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=for-the-badge&logo=github
-[pr-welcome-url]: https://github.com/delineateio/oss-template/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue
-[contributors-shield]: https://img.shields.io/github/contributors/delineateio/oss-template.svg?style=for-the-badge&logo=github
-[contributors-url]: https://github.com/delineateio/oss-template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/delineateio/oss-template.svg?style=for-the-badge&logo=github
-[forks-url]: https://github.com/delineateio/oss-template/network/members
-[stars-shield]: https://img.shields.io/github/stars/delineateio/oss-template.svg?style=for-the-badge&logo=github
-[stars-url]: https://github.com/delineateio/oss-template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/delineateio/oss-template.svg?style=for-the-badge&logo=github
-[issues-url]: https://github.com/delineateio/oss-template/issues
-[license-shield]: https://img.shields.io/github/license/delineateio/oss-template.svg?style=for-the-badge&logo=github
-[license-url]: https://github.com/delineateio/oss-template/blob/master/LICENSE
+[pr-welcome-url]: https://github.com/delineateio/k8s-go-tool-example/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue
+[contributors-shield]: https://img.shields.io/github/contributors/delineateio/k8s-go-tool-example.svg?style=for-the-badge&logo=github
+[contributors-url]: https://github.com/delineateio/k8s-go-tool-example/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/delineateio/k8s-go-tool-example.svg?style=for-the-badge&logo=github
+[forks-url]: https://github.com/delineateio/k8s-go-tool-example/network/members
+[stars-shield]: https://img.shields.io/github/stars/delineateio/k8s-go-tool-example.svg?style=for-the-badge&logo=github
+[stars-url]: https://github.com/delineateio/k8s-go-tool-example/stargazers
+[issues-shield]: https://img.shields.io/github/issues/delineateio/k8s-go-tool-example.svg?style=for-the-badge&logo=github
+[issues-url]: https://github.com/delineateio/k8s-go-tool-example/issues
+[license-shield]: https://img.shields.io/github/license/delineateio/k8s-go-tool-example.svg?style=for-the-badge&logo=github
+[license-url]: https://github.com/delineateio/k8s-go-tool-example/blob/master/LICENSE
