@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: "/dev/src/s1"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: gomod
+    directory: "/dev/src/s2"
+    schedule:
+      interval: "weekly"
