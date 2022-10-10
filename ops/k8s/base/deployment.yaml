@@ -21,6 +21,11 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        capabilities:
+          drop: ALL
+        readOnlyRootFilesystem: true
       - image: delineateio/hola
         name: hola-container
         resources:
@@ -30,6 +35,11 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        capabilities:
+          drop: ALL
+        readOnlyRootFilesystem: true
       - image: k8s.gcr.io/echoserver:1.4
         name: hello-whoami
         resources:
@@ -39,3 +49,8 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        capabilities:
+          drop: ALL
+        readOnlyRootFilesystem: true
